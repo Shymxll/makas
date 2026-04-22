@@ -14,10 +14,7 @@ def allowed_file(filename: str) -> bool:
     return Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 def get_export_format(ext: str) -> tuple:
-    """pydub için format ve codec döner"""
-    if ext == ".m4a":
-        return "ipod", "aac"
-    return ext[1:], None
+    return "mp3", "libmp3lame"
 
 @router.post("/upload")
 async def upload_audio(file: UploadFile = File(...)):
@@ -38,7 +35,7 @@ async def upload_audio(file: UploadFile = File(...)):
 
 @router.post("/process")
 async def process_audio(data: dict):
-    """Ses dosyasını işle - tüm sessiz bölümleri keser"""
+    """Ses dosyasını işle - sessiz bölümleri keser"""
     from app.main import UPLOAD_DIR
     
     file_id = data.get("fileId")
@@ -63,7 +60,7 @@ async def process_audio(data: dict):
         return {"url": f"/files/{file_id}{audio_path.suffix}"}
     
     chunks = []
-    for i, (start, end) in enumerate(nonsilent):
+    for start, end in nonsilent:
         chunk_start = max(0, start - padding)
         chunk_end = min(len(audio), end + padding)
         chunks.append(audio[chunk_start:chunk_end])
@@ -75,12 +72,12 @@ async def process_audio(data: dict):
     for chunk in chunks[1:]:
         processed = processed.append(chunk, crossfade=50)
     
-    output_path = UPLOAD_DIR / f"{file_id}_processed{audio_path.suffix}"
+    output_path = UPLOAD_DIR / f"{file_id}_processed.mp3"
     
     fmt, codec = get_export_format(audio_path.suffix)
     processed.export(output_path, format=fmt, codec=codec)
     
-    return {"url": f"/files/{file_id}_processed{audio_path.suffix}"}
+    return {"url": f"/files/{file_id}_processed.mp3"}
 
 @router.post("/preview")
 async def preview_silence(data: dict):
@@ -157,6 +154,6 @@ async def download_audio(file_id: str):
     audio_path = files[0]
     return FileResponse(
         audio_path,
-        filename=f"makas_processed{audio_path.suffix}",
+        filename="makas_processed.mp3",
         media_type="audio/mpeg"
     )

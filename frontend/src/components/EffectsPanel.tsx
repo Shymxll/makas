@@ -6,7 +6,6 @@ export interface EffectSettings {
   silenceThreshold: number;
   silenceMinLen: number;
   silencePadding: number;
-  reduceNoise: boolean;
 }
 
 interface EffectsPanelProps {
@@ -20,7 +19,6 @@ export default function EffectsPanel({ onApply, onPreview, isProcessing }: Effec
     silenceThreshold: -40,
     silenceMinLen: 500,
     silencePadding: 100,
-    reduceNoise: false,
   });
 
   return (
@@ -69,18 +67,6 @@ export default function EffectsPanel({ onApply, onPreview, isProcessing }: Effec
           onChange={(e) => setSettings({ ...settings, silencePadding: Number(e.target.value) })}
           className="w-full"
         />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="noise"
-          checked={settings.reduceNoise}
-          onChange={(e) => setSettings({ ...settings, reduceNoise: e.target.checked })}
-        />
-        <label htmlFor="noise" className="text-sm font-medium text-gray-700">
-          Gürültü Azaltma
-        </label>
       </div>
 
       <div className="flex gap-2">
