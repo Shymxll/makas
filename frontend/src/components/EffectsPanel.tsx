@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Eye, Wand2 } from "lucide-react";
 
 export interface EffectSettings {
   silenceThreshold: number;
@@ -22,67 +26,87 @@ export default function EffectsPanel({ onApply, onPreview, isProcessing }: Effec
   });
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-      <h2 className="text-lg font-semibold">Ses İşleme Ayarları</h2>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label>Silence Threshold</Label>
+            <span className="text-sm font-medium text-muted-foreground">
+              {settings.silenceThreshold} dB
+            </span>
+          </div>
+          <Slider
+            value={[settings.silenceThreshold]}
+            onValueChange={([v]) => setSettings({ ...settings, silenceThreshold: v })}
+            min={-60}
+            max={-20}
+            step={1}
+            disabled={isProcessing}
+          />
+          <p className="text-xs text-muted-foreground">
+            Lower = more sensitive (removes more)
+          </p>
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Sessizlik Eşiği (dB): {settings.silenceThreshold}
-        </label>
-        <input
-          type="range"
-          min="-60"
-          max="-20"
-          value={settings.silenceThreshold}
-          onChange={(e) => setSettings({ ...settings, silenceThreshold: Number(e.target.value) })}
-          className="w-full"
-        />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label>Min Silence Duration</Label>
+            <span className="text-sm font-medium text-muted-foreground">
+              {settings.silenceMinLen} ms
+            </span>
+          </div>
+          <Slider
+            value={[settings.silenceMinLen]}
+            onValueChange={([v]) => setSettings({ ...settings, silenceMinLen: v })}
+            min={100}
+            max={2000}
+            step={100}
+            disabled={isProcessing}
+          />
+          <p className="text-xs text-muted-foreground">
+            Shorter silences are ignored
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label>Padding</Label>
+            <span className="text-sm font-medium text-muted-foreground">
+              {settings.silencePadding} ms
+            </span>
+          </div>
+          <Slider
+            value={[settings.silencePadding]}
+            onValueChange={([v]) => setSettings({ ...settings, silencePadding: v })}
+            min={0}
+            max={500}
+            step={50}
+            disabled={isProcessing}
+          />
+          <p className="text-xs text-muted-foreground">
+            Gap added before/after audio segments
+          </p>
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Minimum Sessizlik Süresi (ms): {settings.silenceMinLen}
-        </label>
-        <input
-          type="range"
-          min="100"
-          max="2000"
-          step="100"
-          value={settings.silenceMinLen}
-          onChange={(e) => setSettings({ ...settings, silenceMinLen: Number(e.target.value) })}
-          className="w-full"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Padding (ms): {settings.silencePadding}
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="500"
-          step="50"
-          value={settings.silencePadding}
-          onChange={(e) => setSettings({ ...settings, silencePadding: Number(e.target.value) })}
-          className="w-full"
-        />
-      </div>
-
-      <div className="flex gap-2">
-        <button
+      <div className="flex gap-3">
+        <Button
+          variant="outline"
+          className="flex-1"
           onClick={() => onPreview(settings)}
-          className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+          disabled={isProcessing}
         >
-          Önizle
-        </button>
-        <button
+          <Eye className="w-4 h-4 mr-2" />
+          Preview
+        </Button>
+        <Button
+          className="flex-1"
           onClick={() => onApply(settings)}
           disabled={isProcessing}
-          className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
         >
-          {isProcessing ? "İşleniyor..." : "İşleme Uygula"}
-        </button>
+          <Wand2 className="w-4 h-4 mr-2" />
+          Apply
+        </Button>
       </div>
     </div>
   );

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { uploadAudio } from "@/lib/api";
+import { Upload } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 interface AudioUploaderProps {
-  onUpload: (fileId: string, filename: string, audioUrl: string) => void;
+  onUpload: (id: string, filename: string, audioUrl: string) => void;
 }
 
 export default function AudioUploader({ onUpload }: AudioUploaderProps) {
@@ -13,7 +16,7 @@ export default function AudioUploader({ onUpload }: AudioUploaderProps) {
 
   const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("audio/")) {
-      alert("Lütfen ses dosyası yükleyin");
+      alert("Please upload an audio file");
       return;
     }
 
@@ -23,7 +26,7 @@ export default function AudioUploader({ onUpload }: AudioUploaderProps) {
       const audioUrl = `http://localhost:8000/files/${res.id}${res.format}`;
       onUpload(res.id, file.name, audioUrl);
     } catch {
-      alert("Yükleme başarısız");
+      alert("Upload failed");
     } finally {
       setIsUploading(false);
     }
@@ -42,10 +45,12 @@ export default function AudioUploader({ onUpload }: AudioUploaderProps) {
   }, [handleFile]);
 
   return (
-    <div
-      className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
-        isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-      }`}
+    <Card
+      className={`relative border-2 border-dashed p-12 text-center transition-colors cursor-pointer ${
+        isDragging
+          ? "border-primary bg-accent"
+          : "border-border hover:border-muted-foreground"
+      } ${isUploading ? "pointer-events-none opacity-50" : ""}`}
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={onDrop}
@@ -54,24 +59,39 @@ export default function AudioUploader({ onUpload }: AudioUploaderProps) {
         type="file"
         accept="audio/*"
         onChange={onChange}
-        className="hidden"
-        id="audio-upload"
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         disabled={isUploading}
       />
-      <label htmlFor="audio-upload" className="cursor-pointer">
+      
+      <div className="flex flex-col items-center gap-4">
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+          isDragging ? "bg-accent" : "bg-muted"
+        }`}>
+          <Upload className={`w-8 h-8 ${isDragging ? "text-primary" : "text-muted-foreground"}`} />
+        </div>
+        
         {isUploading ? (
-          <p className="text-gray-500">Yükleniyor...</p>
+          <p className="text-muted-foreground">Uploading...</p>
         ) : (
           <>
-            <p className="text-lg font-medium text-gray-700">
-              Ses dosyası yüklemek için tıklayın veya sürükleyin
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Desteklenen formatlar: MP3, WAV, OGG, M4A
-            </p>
+            <div className="space-y-1">
+              <p className="text-lg font-medium">
+                Click or drag to upload audio file
+              </p>
+              <p className="text-sm text-muted-foreground">
+                or drop file here
+              </p>
+            </div>
+            
+            <div className="flex gap-2 flex-wrap justify-center">
+              <Badge variant="secondary">MP3</Badge>
+              <Badge variant="secondary">WAV</Badge>
+              <Badge variant="secondary">OGG</Badge>
+              <Badge variant="secondary">M4A</Badge>
+            </div>
           </>
         )}
-      </label>
-    </div>
+      </div>
+    </Card>
   );
 }
