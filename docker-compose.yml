@@ -7,11 +7,11 @@ services:
       dockerfile: Dockerfile
     container_name: makas_backend
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:
       - ./backend/app/uploads:/app/app/uploads
     environment:
-      - PORT=8000
+      - PORT=${BACKEND_PORT}
     restart: unless-stopped
     networks:
       - makas_network
@@ -22,10 +22,10 @@ services:
       dockerfile: Dockerfile
     container_name: makas_frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000
-      - PORT=3000
+      - NEXT_PUBLIC_API_URL=http://backend:${BACKEND_PORT}
+      - PORT=${FRONTEND_PORT}
     restart: unless-stopped
     networks:
       - makas_network
