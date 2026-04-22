@@ -1,10 +1,13 @@
 """Audio upload ve processing endpoint'leri"""
 import uuid
 from pathlib import Path
+import logging
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from pydub import AudioSegment
 from pydub.silence import detect_nonsilent
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -75,7 +78,14 @@ async def process_audio(data: dict):
     output_path = UPLOAD_DIR / f"{file_id}_processed.mp3"
     
     fmt, codec = get_export_format(audio_path.suffix)
+    logger.info(f"Exporting to {output_path} format={fmt} codec={codec}")
     processed.export(output_path, format=fmt, codec=codec)
+    
+    if not output_path.exists():
+        logger.error(f"Failed to create processed file: {output_path}")
+        raise HTTPException(500, "İşleme başarısız")
+    
+    logger.info(f"Processed file created: {output_path} size={output_path.stat().st_size}")
     
     return {"url": f"/files/{file_id}_processed.mp3"}
 
