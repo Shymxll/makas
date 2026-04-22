@@ -66,8 +66,6 @@ export default function VolumeMeter({ audioUrl, height = 8 }: VolumeMeterProps) 
 
     draw();
 
-    audio.play().catch(() => {});
-
     return () => {
       cancelAnimationFrame(animationRef.current);
       audio.pause();
@@ -77,9 +75,6 @@ export default function VolumeMeter({ audioUrl, height = 8 }: VolumeMeterProps) 
 
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-neutral-500 font-mono">LEVEL</span>
-      </div>
       <canvas
         ref={containerRef}
         width={280}
