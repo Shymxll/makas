@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-ALLOWED_EXTENSIONS = {".mp3", ".wav", ".ogg", ".m4a"}
+ALLOWED_EXTENSIONS = {".mp3", ".wav", ".ogg", ".m4a", ".aac"}
 
 def allowed_file(filename: str) -> bool:
     return Path(filename).suffix.lower() in ALLOWED_EXTENSIONS

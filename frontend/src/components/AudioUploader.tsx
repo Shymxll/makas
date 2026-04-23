@@ -88,6 +88,7 @@ export default function AudioUploader({ onUpload }: AudioUploaderProps) {
               <Badge variant="secondary">WAV</Badge>
               <Badge variant="secondary">OGG</Badge>
               <Badge variant="secondary">M4A</Badge>
+              <Badge variant="secondary">AAC</Badge>
             </div>
           </>
         )}
