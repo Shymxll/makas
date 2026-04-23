@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5222/api";
+const API_BASE = "http://localhost:8000/api";
 
 export interface UploadResponse {
   id: string;
@@ -24,5 +24,5 @@ export async function uploadAudio(file: File): Promise<UploadResponse> {
 
 export function getAudioUrl(fileId: string, filename: string): string {
   const ext = filename.split(".").pop();
-  return `http://localhost:5222/files/${fileId}.${ext}`;
+  return `http://localhost:8000/files/${fileId}.${ext}`;
 }
