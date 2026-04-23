@@ -15,7 +15,9 @@ out/
 
 # Uploads
 backend/uploads/*
+backend/app/uploads/*
 !backend/uploads/.gitkeep
+!backend/app/uploads/.gitkeep
 
 # IDE
 .vscode/
