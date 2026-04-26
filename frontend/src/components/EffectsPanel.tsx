@@ -5,11 +5,19 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Eye, Wand2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface EffectSettings {
   silenceThreshold: number;
   silenceMinLen: number;
   silencePadding: number;
+  bitrate: number;
 }
 
 interface EffectsPanelProps {
@@ -23,6 +31,7 @@ export default function EffectsPanel({ onApply, onPreview, isProcessing }: Effec
     silenceThreshold: -40,
     silenceMinLen: 500,
     silencePadding: 100,
+    bitrate: 192,
   });
 
   return (
@@ -85,6 +94,28 @@ export default function EffectsPanel({ onApply, onPreview, isProcessing }: Effec
           />
           <p className="text-xs text-muted-foreground">
             Gap added before/after audio segments
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Bitrate</Label>
+          <Select
+            value={settings.bitrate.toString()}
+            onValueChange={(v) => setSettings({ ...settings, bitrate: Number(v) })}
+            disabled={isProcessing}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="128">128 kbps (Smallest file)</SelectItem>
+              <SelectItem value="192">192 kbps (Standard)</SelectItem>
+              <SelectItem value="256">256 kbps (High)</SelectItem>
+              <SelectItem value="320">320 kbps (Best quality)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Higher = better quality, larger file
           </p>
         </div>
       </div>

@@ -19,6 +19,13 @@ def allowed_file(filename: str) -> bool:
 def get_export_format(ext: str) -> tuple:
     return "mp3", "libmp3lame"
 
+BITRATE_OPTIONS = {
+    128: "128k",
+    192: "192k",
+    256: "256k",
+    320: "320k",
+}
+
 @router.post("/upload")
 async def upload_audio(file: UploadFile = File(...)):
     """Ses dosyası yükle"""
@@ -45,6 +52,7 @@ async def process_audio(data: dict):
     threshold = data.get("silenceThreshold", -40)
     min_silence_len = data.get("silenceMinLen", 500)
     padding = data.get("silencePadding", 100)
+    bitrate = data.get("bitrate", 192)
 
     files = list(UPLOAD_DIR.glob(f"{file_id}.*"))
     if not files:
@@ -78,8 +86,9 @@ async def process_audio(data: dict):
     output_path = UPLOAD_DIR / f"{file_id}_processed.mp3"
     
     fmt, codec = get_export_format(audio_path.suffix)
-    logger.info(f"Exporting to {output_path} format={fmt} codec={codec}")
-    processed.export(output_path, format=fmt, codec=codec)
+    bitrate_str = BITRATE_OPTIONS.get(bitrate, "192k")
+    logger.info(f"Exporting to {output_path} format={fmt} codec={codec} bitrate={bitrate_str}")
+    processed.export(output_path, format=fmt, codec=codec, bitrate=bitrate_str)
     
     if not output_path.exists():
         logger.error(f"Failed to create processed file: {output_path}")
